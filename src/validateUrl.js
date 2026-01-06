@@ -1,14 +1,16 @@
-import * as yup from 'yup'
+import yup from './settings/yup.js'
 
-export const validateUrl = ({ url, existingUrls = [] }) => {
-  const schema = yup.object().shape({
-    url: yup
+export const validateUrl = ({ t, url, existingUrls = [] }) => {
+  const validation = yup(t)
+
+  const schema = validation.object().shape({
+    url: validation
       .string()
-      .required('URL не должен быть пустым')
-      .url('Ссылка должна быть валидным URL')
+      .required()
+      .url()
       .test(
         'is-unique',
-        'RSS уже существует',
+        t('validation.validateUrl.duplicate'),
         value => !existingUrls.includes(value),
       ),
   })
