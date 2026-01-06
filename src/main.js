@@ -1,4 +1,5 @@
 import './styles/main.css'
+import { validateUrl } from './validateUrl.js'
 
 document.querySelector('#app').innerHTML = `
   <main class="flex-grow-1">
@@ -21,7 +22,7 @@ document.querySelector('#app').innerHTML = `
             </div>
           </form>
           <p class="mt-2 mb-0 text-secondary">Пример: https://lorem-rss.hexlet.app/feed</p>
-          <p class="feedback m-0 position-absolute small text-danger"></p>
+          <p class="feedback m-0 position-absolute small"></p>
         </div>
       </div>
     </section>
@@ -37,3 +38,32 @@ document.querySelector('#app').innerHTML = `
     </section>
   </main>
 `
+const form = document.querySelector('.rss-form')
+const input = document.getElementById('url-input')
+const feedback = document.querySelector('.feedback')
+
+form.addEventListener('submit', (e) => {
+  e.preventDefault()
+
+  const formData = new FormData(form)
+  const url = formData.get('url')
+
+  validateUrl({ url }).then(({ isValid, errors }) => {
+    feedback.classList.remove('text-danger')
+    feedback.classList.remove('text-success')
+    input.classList.remove('is-invalid')
+
+    if (!isValid) {
+      feedback.classList.add('text-danger')
+      feedback.textContent = errors[0]['message']
+      input.classList.add('is-invalid')
+
+      return
+    }
+
+    feedback.classList.add('text-success')
+    feedback.textContent = 'RSS успешно добавлен!'
+
+    form.reset()
+  })
+})
