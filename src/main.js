@@ -1,8 +1,15 @@
+import i18next from 'i18next'
+import resources from './locales/index.js'
+import app from './app.js'
 import './styles/main.css'
-import { validateUrl } from './validateUrl.js'
-import translate from './locales/translate.js'
 
-translate().then((t) => {
+const i18nextInstance = i18next.createInstance()
+
+i18nextInstance.init({
+  lng: 'ru',
+  debug: false,
+  resources,
+}).then((t) => {
   document.querySelector('#app').innerHTML = `
   <main class="flex-grow-1">
     <section class="container-fluid bg-dark p-5">
@@ -40,33 +47,6 @@ translate().then((t) => {
     </section>
   </main>
 `
-  const form = document.querySelector('.rss-form')
-  const input = document.getElementById('url-input')
-  const feedback = document.querySelector('.feedback')
 
-  form.addEventListener('submit', (e) => {
-    e.preventDefault()
-
-    const formData = new FormData(form)
-    const url = formData.get('url')
-
-    validateUrl({ t, url }).then(({ isValid, errors }) => {
-      feedback.classList.remove('text-danger')
-      feedback.classList.remove('text-success')
-      input.classList.remove('is-invalid')
-
-      if (!isValid) {
-        feedback.classList.add('text-danger')
-        feedback.textContent = errors[0]['message']
-        input.classList.add('is-invalid')
-
-        return
-      }
-
-      feedback.classList.add('text-success')
-      feedback.textContent = t('feedback.success')
-
-      form.reset()
-    })
-  })
+  app(t)
 })

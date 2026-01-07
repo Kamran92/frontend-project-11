@@ -11,18 +11,21 @@ export default {
         ariaLabel: 'ссылка RSS',
         buttonAriaLabel: 'добавить',
       },
+      post: {
+        viewButton: 'Просмотр',
+      },
     },
-    feedback: {
+    errors: {
+      notUrl: 'Ссылка должна быть валидным URL',
+      alreadyInList: 'RSS уже существует',
+      notRss: 'Ресурс не содержит валидный RSS',
+      networkError: 'Ошибка сети',
+      unknown: 'Что-то пошло не так',
+      empty: 'Не должно быть пустым',
+    },
+    status: {
+      sending: 'RSS загружается',
       success: 'RSS успешно загружен',
-    },
-    validation: {
-      common: {
-        required: 'Не должно быть пустым',
-        url: 'Ссылка должна быть валидным URL',
-      },
-      validateUrl: {
-        duplicate: 'RSS уже существует',
-      },
     },
   },
 }
