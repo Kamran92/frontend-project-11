@@ -5,6 +5,7 @@ import customMessagesYUP from './settings/customMessagesYUP.js'
 import watch from './view.js'
 
 const defaultOptions = { timeout: 10000 }
+const timeOut = 5000
 const addProxy = (url) => {
   const proxyUrl = new URL('/get', 'https://allorigins.hexlet.app')
   proxyUrl.searchParams.append('disableCache', 'true')
@@ -41,6 +42,22 @@ const loadRSS = (watchedState, url) => {
       watchedState.error = handleError(error)
       watchedState.form.status = 'inValid'
     })
+}
+const updatePosts = (watchedState) => {
+  const promises = watchedState.feeds
+    .map(feed => axios.get(addProxy(feed.link))
+      .then((response) => {
+        const { posts } = parse(response.data.contents)
+        const postsWithCurrentId = watchedState.posts.filter(post => post.feedId === feed.id)
+        const displayedPostLinks = postsWithCurrentId.map(post => post.link)
+        const newPosts = posts.filter(post => !displayedPostLinks.includes(post.link))
+        watchedState.posts.unshift(...newPosts)
+      })
+      .catch((error) => {
+        console.error(`Ошибка при извлечении данных из ленты ${feed.id}:`, error)
+      }))
+
+  return Promise.all(promises).finally(() => setTimeout(updatePosts, timeOut, watchedState))
 }
 export default (t) => {
   yup.setLocale(customMessagesYUP)
@@ -97,4 +114,6 @@ export default (t) => {
         }
       })
   })
+
+  updatePosts(watchedState)
 }
