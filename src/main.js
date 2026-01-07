@@ -1,4 +1,5 @@
 import i18next from 'i18next'
+import 'bootstrap'
 import resources from './locales/index.js'
 import app from './app.js'
 import './styles/main.css'
@@ -12,6 +13,24 @@ i18nextInstance.init({
 }).then((t) => {
   document.querySelector('#app').innerHTML = `
   <main class="flex-grow-1">
+    <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <a class="btn btn-primary full-article" href="#" role="button" target="_blank" rel="noopener noreferrer">
+              Читать полностью 
+            </a > 
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" > Закрыть </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <section class="container-fluid bg-dark p-5">
       <div class="row">
         <div class="col-md-10 col-lg-8 mx-auto text-white">
@@ -21,7 +40,7 @@ i18nextInstance.init({
             <div class="row">
               <div class="col">
                 <div class="form-floating">
-                  <input id="url-input" autofocus="" type="text" required="" name="url" aria-label="${t('ui.rssForm.ariaLabel')}" class="form-control w-100" placeholder="${t('ui.rssForm.inputPlaceholder')}" autocomplete="off">
+                  <input id="url-input" autofocus="" type="text" required="" name="url" aria-label="url" class="form-control w-100" placeholder="${t('ui.rssForm.inputPlaceholder')}" autocomplete="off">
                   <label for="url-input">${t('ui.rssForm.inputLabel')}</label>
                 </div>
               </div>

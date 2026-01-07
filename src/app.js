@@ -3,6 +3,7 @@ import axios from 'axios'
 import parse from './rss.js'
 import customMessagesYUP from './settings/customMessagesYUP.js'
 import watch from './view.js'
+import { v4 as uuidv4 } from 'uuid'
 
 const defaultOptions = { timeout: 10000 }
 const timeOut = 5000
@@ -12,10 +13,18 @@ const addProxy = (url) => {
   proxyUrl.searchParams.append('url', url)
   return proxyUrl.toString()
 }
+const addId = (items, id) => {
+  items.forEach((item) => {
+    item.id = uuidv4()
+    item.feedId = id
+  })
+}
 const handleData = (data, watchedState, url) => {
   const { feed, posts } = data
   feed.link = url
+  feed.id = uuidv4()
   watchedState.feeds.push(feed)
+  addId(posts, feed.id)
   watchedState.posts.unshift(...posts)
 }
 const handleError = (error) => {
@@ -51,6 +60,7 @@ const updatePosts = (watchedState) => {
         const postsWithCurrentId = watchedState.posts.filter(post => post.feedId === feed.id)
         const displayedPostLinks = postsWithCurrentId.map(post => post.link)
         const newPosts = posts.filter(post => !displayedPostLinks.includes(post.link))
+        addId(newPosts, feed.id)
         watchedState.posts.unshift(...newPosts)
       })
       .catch((error) => {
@@ -82,6 +92,9 @@ export default (t) => {
     containerPosts: document.querySelector('.posts'),
     feedback: document.querySelector('.feedback'),
     urlInput: document.querySelector('#url-input'),
+    modalHeader: document.querySelector('.modal-header'),
+    modalBody: document.querySelector('.modal-body'),
+    modalHref: document.querySelector('.full-article'),
   }
 
   const watchedState = watch(state, t, elements)
@@ -113,6 +126,15 @@ export default (t) => {
           loadRSS(watchedState, input)
         }
       })
+  })
+
+  elements.containerPosts.addEventListener('click', (e) => {
+    const postId = e.target.dataset.id
+
+    if (postId) {
+      watchedState.uiState.currentPostId = postId
+      watchedState.uiState.viewedPostIds.add(postId)
+    }
   })
 
   updatePosts(watchedState)

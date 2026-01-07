@@ -3,7 +3,11 @@ export default (xml, link) => {
   const data = parser.parseFromString(xml, 'text/xml')
   const parseError = data.querySelector('parsererror')
 
-  if (parseError) throw new Error(parseError.textContent)
+  if (parseError) {
+    const error = new Error(parseError.textContent)
+    error.isParsingError = true
+    throw error
+  }
 
   const title = data.querySelector('title').textContent
   const description = data.querySelector('description').textContent

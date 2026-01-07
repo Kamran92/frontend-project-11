@@ -8,7 +8,6 @@ export default {
         inputLabel: 'Ссылка RSS',
         submitButton: 'Добавить',
         example: 'Пример: https://lorem-rss.hexlet.app/feed',
-        ariaLabel: 'ссылка RSS',
         buttonAriaLabel: 'добавить',
       },
       post: {

@@ -3,6 +3,7 @@ import onChange from 'on-change'
 const createButton = (post, t) => {
   const button = document.createElement('button')
   button.setAttribute('type', 'button')
+  button.setAttribute('data-id', post.id)
   button.setAttribute('data-bs-toggle', 'modal')
   button.setAttribute('data-bs-target', '#modal')
   button.classList.add('btn', 'btn-outline-primary', 'btn-sm')
@@ -72,6 +73,13 @@ const createPosts = (state, t, elements) => {
     a.setAttribute('href', post.link)
     a.setAttribute('target', '_blank')
     a.setAttribute('rel', 'noopener noreferrer')
+    if (state.uiState.viewedPostIds.has(post.id)) {
+      a.classList.add('fw-normal')
+      a.classList.add('link-secondary')
+    }
+    else {
+      a.classList.add('fw-bold')
+    }
     a.textContent = post.title
     li.append(a)
     li.append(button)
@@ -112,6 +120,20 @@ const renderFormStatus = (state, t, elements) => {
   }
 }
 
+const displayPostInModal = (state, elements) => {
+  const displayedPostId = state.uiState.currentPostId
+  const currentPost = state.posts.find(post => post.id === displayedPostId)
+  const modalTitleElement = elements.modalHeader.querySelector('.modal-title')
+  modalTitleElement.textContent = currentPost.title
+  elements.modalBody.textContent = currentPost.description
+  elements.modalHref.setAttribute('href', currentPost.link)
+
+  const element = document.querySelector(`[data-id="${displayedPostId}"]`)
+  const linkElement = element.closest('li').querySelector('a')
+  linkElement.classList.replace('fw-bold', 'fw-normal')
+  linkElement.classList.add('link-secondary')
+}
+
 export default (state, t, elements) => {
   const watchedState = onChange(state, (path) => {
     switch (path) {
@@ -123,6 +145,10 @@ export default (state, t, elements) => {
         break
       case 'form.status':
         renderFormStatus(watchedState, t, elements)
+        break
+      case 'uiState.currentPostId':
+      case 'uiState.viewedPostIds':
+        displayPostInModal(watchedState, elements)
         break
       default:
         break
